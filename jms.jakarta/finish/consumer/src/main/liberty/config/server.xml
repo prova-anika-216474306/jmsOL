@@ -1,0 +1,15 @@
+<server description="Sample Liberty server">
+
+    <featureManager>
+        <feature>jakartaee-9.0</feature>
+    </featureManager>
+
+    <variable name="default.http.port" defaultValue="9081"/>
+    <variable name="default.https.port" defaultValue="9444"/>
+
+    <webApplication location="consumer.war" contextRoot="/" />
+
+    <httpEndpoint host="*" httpPort="${default.http.port}" 
+        httpsPort="${default.https.port}" id="defaultHttpEndpoint"/>
+
+</server>
