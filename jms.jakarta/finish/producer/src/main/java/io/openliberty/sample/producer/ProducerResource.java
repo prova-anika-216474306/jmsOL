@@ -57,9 +57,44 @@ public class ProducerResource {
 
                 // MessageProducer is used for sending messages (as opposed
                 // to MessageConsumer which is used for receiving them)
+                
+                MessageProducer producer = session.createProducer(queue);
+                MessageProducer producer = session.createProducer(topic);
                 MessageProducer producer = session.createProducer(destination);
 
-                // We will send a small text message saying 'Hello' in Japanese
+                
+                //The send message method
+                public void onMessage(Message message) {
+                try {
+                    // We will send a small text message saying 'Hello' in Japanese
+                        TextMessage response = this.session.createTextMessage();
+                        if (message instanceof TextMessage) {
+                        TextMessage txtMsg = (TextMessage) message;
+                        String messageText = txtMsg.getText();
+                    response.setText(this.messageProtocol.handleProtocolMessage(messageText));
+            }
+            //Set the correlation ID from the received message to be the correlation id of the response message
+            //this lets the client identify which message this is a response to if it has more than
+            //one outstanding message to the server
+            response.setJMSCorrelationID(message.getJMSCorrelationID());
+
+            //Send the response to the Destination specified by the JMSReplyTo field of the received message,
+            //this is presumably a temporary queue created by the client
+            this.replyProducer.send(message.getJMSReplyTo(), response);
+        } 
+                    catch (JMSException e) {
+            //Handle the exception appropriately
+        }
+                    
+
+            //Set the correlation ID from the received message to be the correlation id of the response message
+            //this lets the client identify which message this is a response to if it has more than
+            //one outstanding message to the server
+            response.setJMSCorrelationID(message.getJMSCorrelationID());
+
+            //Send the response to the Destination specified by the JMSReplyTo field of the received message,
+            //this is presumably a temporary queue created by the client
+            this.replyProducer.send(message.getJMSReplyTo(), response);
                 TextMessage message = session.createTextMessage("Hello consumer");
 
                 // Here we are sending the message!
