@@ -61,7 +61,24 @@ public class ConsumerResource {
                 // for a message to arrive on the queue.
                 javax.jms.Message message;
                 message = consumer.receive();
+                
+                //sending messages from the client side
+                TextMessage txtMessage = session.createTextMessage();
+                txtMessage.setText("Hello producer")
+                //Set the reply to field to the temp queue created above, this is the queue the server will respond to
+                txtMessage.setJMSReplyTo(tempDest);
+               String correlationId = this.createRandomString();
+            txtMessage.setJMSCorrelationID(correlationId);
+            this.producer.send(txtMessage);
+        } catch (JMSException e) {
+            //Handle the exception appropriately
+        }
 
+                
+                
+                
+                
+                
                 // There are many types of Message and TextMessage
                 // is just one of them. Producer sent us a TextMessage
                 // so we must cast to it to get access to its .getText()
